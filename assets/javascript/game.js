@@ -8,22 +8,25 @@ var firebaseConfig = {
     storageBucket: "testing-69392.appspot.com",
     messagingSenderId: "761454096201",
     appId: "1:761454096201:web:9f34eec8748af7b3"
-  };
+};
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
 
-var name = "";
-var pick = "";
-var result;
 var Player1;
 var Player2;
+var key1 = false;
+var key2 = false;
+var name = "";
+var pick;
+var result;
 var wins1 = 0;
 var wins2 = 0;
 var losses1 = 0;
 var losses2 = 0;
 var message = "";
+var messages = [];
 
 function whoWins() {
     result = Player1.pick - Player2.pick;
@@ -32,35 +35,47 @@ function whoWins() {
         losses2++;
 
         database.ref("player1").update({
-			wins: wins1
+            wins: wins1
         });
-        
+
         database.ref("player2").update({
-			losses: losses2
+            losses: losses2
         });
-        
-        console.log("player 1 wins");
+
+        database.ref("chat").push({
+            message: "Player 1 WINS!!!"
+        })
     }
     else if (result === -1 || result === 2) {
         wins2++;
         losses1++;
 
         database.ref("player2").update({
-			wins: wins2
+            wins: wins2
         });
-        
+
         database.ref("player1").update({
-			losses: losses1
+            losses: losses1
         });
-        
-        console.log("player 2 wins");
+
+        database.ref("chat").push({
+            message: "Player 2 WINS!!!"
+        })
     }
     else {
-        console.log("no one wins");
+        database.ref("chat").push({
+            message: "It's a Tie!!!"
+        })
     }
+    if (key1 === true) {
+        $("#choice1").removeClass("d-none");
+    } else {
+        $("#choice2").removeClass("d-none");
+    }
+    $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight}, 1000);
 }
 
-database.ref().on("value", function(snapshot) {
+database.ref().on("value", function (snapshot) {
     Player1 = snapshot.child("player1").val();
     $("#player1Name").html(snapshot.child("player1").child("name").val());
     $("#player1Wins").html(snapshot.child("player1").child("wins").val());
@@ -78,7 +93,28 @@ database.ref().on("value", function(snapshot) {
     if (snapshot.child("player2").child("name").val() != "waiting") {
         $("#join2").addClass("d-none");
     }
-})
+
+    var messageDiv = $("<div>");
+    for (var key in snapshot.val().chat) {
+        console.log(snapshot.val().chat[key].message);
+        var row = $("<p>").text(snapshot.val().chat[key].message);
+        row.addClass("mb-0");
+        messageDiv.append(row);
+    }
+    $("#messages").html(messageDiv);
+});
+
+$("#submit").on('click', function () {
+    event.preventDefault();
+    message = $("#message").val().trim();
+
+    database.ref("chat").push({
+        message: message
+    })
+    $("#message").val("");
+    $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight}, 1000);
+});
+
 
 $("#player1").on('click', function () {
     event.preventDefault();
@@ -90,6 +126,7 @@ $("#player1").on('click', function () {
             name: name,
             exists: true,
         });
+        key1 = true;
     }
     $("#join1").addClass("d-none");
     $("#join2").addClass("d-none");
@@ -101,12 +138,13 @@ $("#player2").on('click', function () {
     event.preventDefault();
 
     name = $("#inputName2").val().trim();
-    
+
     if (!Player2.exists) {
         database.ref("player2").update({
             name: name,
             exists: true,
         });
+        key2 = true;
     }
     $("#join1").addClass("d-none");
     $("#join2").addClass("d-none");
@@ -114,7 +152,7 @@ $("#player2").on('click', function () {
     $("#choice2").removeClass("d-none");
 });
 
-$("#rock1").on("click", function(){
+$("#rock1").on("click", function () {
     event.preventDefault();
 
     database.ref("player1").update({
@@ -123,7 +161,7 @@ $("#rock1").on("click", function(){
     $("#choice1").addClass("d-none");
 })
 
-$("#paper1").on("click", function(){
+$("#paper1").on("click", function () {
     event.preventDefault();
 
     database.ref("player1").update({
@@ -132,7 +170,7 @@ $("#paper1").on("click", function(){
     $("#choice1").addClass("d-none");
 })
 
-$("#scissors1").on("click", function(){
+$("#scissors1").on("click", function () {
     event.preventDefault();
 
     database.ref("player1").update({
@@ -141,7 +179,7 @@ $("#scissors1").on("click", function(){
     $("#choice1").addClass("d-none");
 })
 
-$("#rock2").on("click", function(){
+$("#rock2").on("click", function () {
     event.preventDefault();
 
     database.ref("player2").update({
@@ -151,7 +189,7 @@ $("#rock2").on("click", function(){
     whoWins();
 })
 
-$("#paper2").on("click", function(){
+$("#paper2").on("click", function () {
     event.preventDefault();
 
     database.ref("player2").update({
@@ -161,7 +199,7 @@ $("#paper2").on("click", function(){
     whoWins();
 })
 
-$("#scissors2").on("click", function(){
+$("#scissors2").on("click", function () {
     event.preventDefault();
 
     database.ref("player2").update({
@@ -184,7 +222,6 @@ database.ref('/player2').set({
     wins: wins2,
     losses: losses2
 });
-
 
 $("#submit").on('click', function () {
     event.preventDefault();
