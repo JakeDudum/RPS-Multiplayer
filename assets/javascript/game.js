@@ -1,16 +1,60 @@
-$(document).ready(function () {
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
-    apiKey: "AIzaSyCDDshZBVe4v9dyD5lXvIeX3bm6YLXyyQY",
-    authDomain: "rps-multiplayer-9f587.firebaseapp.com",
-    databaseURL: "https://rps-multiplayer-9f587.firebaseio.com",
-    projectId: "rps-multiplayer-9f587",
-    storageBucket: "rps-multiplayer-9f587.appspot.com",
-    messagingSenderId: "221832212197",
-    appId: "1:221832212197:web:25093dabe74fa862"
-};
+    apiKey: "AIzaSyBMaADkXGTjthhbPHVctBZQ22FQQgInOwc",
+    authDomain: "testing-69392.firebaseapp.com",
+    databaseURL: "https://testing-69392.firebaseio.com",
+    projectId: "testing-69392",
+    storageBucket: "testing-69392.appspot.com",
+    messagingSenderId: "761454096201",
+    appId: "1:761454096201:web:9f34eec8748af7b3"
+  };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+var database = firebase.database();
+
+var name = "";
+var pick = "";
+var result;
+var Player1;
+var Player2;
+var wins1 = 0;
+var wins2 = 0;
+var losses1 = 0;
+var losses2 = 0;
+var message = "";
+
+function whoWins() {
+    if (result === -2 || result === 1) {
+        wins1++;
+        losses2++;
+    }
+    else if (result === -1 || result === 2) {
+        wins2++;
+        losses1++;
+    }
+    else {
+        //tie;
+    }
+}
+
+database.ref('/player1').set({
+    exists: false,
+    name: "waiting for player 1",
+    wins: wins1,
+    losses: losses1
 });
+
+database.ref('/player2').set({
+    exists: false,
+    name: "waiting for player 2",
+    wins: wins2,
+    losses: losses2
+});
+
+
+$("#submit").on('click', function () {
+    event.preventDefault();
+
+})
