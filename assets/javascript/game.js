@@ -26,16 +26,37 @@ var losses2 = 0;
 var message = "";
 
 function whoWins() {
+    result = Player1.pick - Player2.pick;
     if (result === -2 || result === 1) {
         wins1++;
         losses2++;
+
+        database.ref("player1").update({
+			wins: wins1
+        });
+        
+        database.ref("player2").update({
+			losses: losses2
+        });
+        
+        console.log("player 1 wins");
     }
     else if (result === -1 || result === 2) {
         wins2++;
         losses1++;
+
+        database.ref("player2").update({
+			wins: wins2
+        });
+        
+        database.ref("player1").update({
+			losses: losses1
+        });
+        
+        console.log("player 2 wins");
     }
     else {
-        //tie;
+        console.log("no one wins");
     }
 }
 
@@ -72,6 +93,8 @@ $("#player1").on('click', function () {
     }
     $("#join1").addClass("d-none");
     $("#join2").addClass("d-none");
+
+    $("#choice1").removeClass("d-none");
 });
 
 $("#player2").on('click', function () {
@@ -87,7 +110,66 @@ $("#player2").on('click', function () {
     }
     $("#join1").addClass("d-none");
     $("#join2").addClass("d-none");
+
+    $("#choice2").removeClass("d-none");
 });
+
+$("#rock1").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player1").update({
+        pick: 1
+    });
+    $("#choice1").addClass("d-none");
+})
+
+$("#paper1").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player1").update({
+        pick: 2
+    });
+    $("#choice1").addClass("d-none");
+})
+
+$("#scissors1").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player1").update({
+        pick: 3
+    });
+    $("#choice1").addClass("d-none");
+})
+
+$("#rock2").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player2").update({
+        pick: 1
+    });
+    $("#choice2").addClass("d-none");
+    whoWins();
+})
+
+$("#paper2").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player2").update({
+        pick: 2
+    });
+    $("#choice2").addClass("d-none");
+    whoWins();
+})
+
+$("#scissors2").on("click", function(){
+    event.preventDefault();
+
+    database.ref("player2").update({
+        pick: 3
+    });
+    $("#choice2").addClass("d-none");
+    whoWins();
+})
 
 database.ref('/player1').set({
     name: "waiting",
