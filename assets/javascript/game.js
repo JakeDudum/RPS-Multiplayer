@@ -39,16 +39,66 @@ function whoWins() {
     }
 }
 
+database.ref().on("value", function(snapshot) {
+    Player1 = snapshot.child("player1").val();
+    $("#player1Name").html(snapshot.child("player1").child("name").val());
+    $("#player1Wins").html(snapshot.child("player1").child("wins").val());
+    $("#player1Losses").html(snapshot.child("player1").child("losses").val());
+
+    if (snapshot.child("player1").child("name").val() != "waiting") {
+        $("#join1").addClass("d-none");
+    }
+
+    Player2 = snapshot.child("player2").val();
+    $("#player2Name").html(snapshot.child("player2").child("name").val());
+    $("#player2Wins").html(snapshot.child("player2").child("wins").val());
+    $("#player2Losses").html(snapshot.child("player2").child("losses").val());
+
+    if (snapshot.child("player2").child("name").val() != "waiting") {
+        $("#join2").addClass("d-none");
+    }
+})
+
+$("#player1").on('click', function () {
+    event.preventDefault();
+
+    name = $("#inputName1").val().trim();
+
+    if (!Player1.exists) {
+        database.ref("player1").update({
+            name: name,
+            exists: true,
+        });
+    }
+    $("#join1").addClass("d-none");
+    $("#join2").addClass("d-none");
+});
+
+$("#player2").on('click', function () {
+    event.preventDefault();
+
+    name = $("#inputName2").val().trim();
+    
+    if (!Player2.exists) {
+        database.ref("player2").update({
+            name: name,
+            exists: true,
+        });
+    }
+    $("#join1").addClass("d-none");
+    $("#join2").addClass("d-none");
+});
+
 database.ref('/player1').set({
+    name: "waiting",
     exists: false,
-    name: "waiting for player 1",
     wins: wins1,
     losses: losses1
 });
 
 database.ref('/player2').set({
+    name: "waiting",
     exists: false,
-    name: "waiting for player 2",
     wins: wins2,
     losses: losses2
 });
