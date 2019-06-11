@@ -29,6 +29,23 @@ var message = "";
 var messages = [];
 var turn;
 
+window.onbeforeunload = deletePlayer;
+
+function deletePlayer() {
+    if (key1 === true) {
+        database.ref("player1").remove();
+        database.ref().update({
+            userLeft: true
+        });
+    }
+    if (key2 === true) {
+        database.ref("player2").remove();
+        database.ref().update({
+            userLeft: true
+        });
+    }
+}
+
 function whoWins() {
     result = Player1.pick - Player2.pick;
     if (result === -2 || result === 1) {
@@ -68,6 +85,17 @@ function whoWins() {
 }
 
 database.ref().on("value", function (snapshot) {
+    if (snapshot.child("userLeft").val() === true) {
+        wins1 = 0;
+        losses1 = 0;
+        wins2 = 0;
+        losses2 = 0;
+
+        database.ref().update({
+            userLeft: false
+        });
+    }
+
     Player1 = snapshot.child("player1").val();
     $("#player1Name").html(snapshot.child("player1").child("name").val());
     $("#player1Wins").html(snapshot.child("player1").child("wins").val());
