@@ -36,7 +36,7 @@ function whoWins() {
         losses2++;
 
         database.ref("chat").push({
-            message: "Player 1 WINS!!!"
+            message: "System: Player 1 WINS!!!"
         })
     }
     else if (result === -1 || result === 2) {
@@ -44,12 +44,12 @@ function whoWins() {
         losses1++;
 
         database.ref("chat").push({
-            message: "Player 2 WINS!!!"
+            message: "System: Player 2 WINS!!!"
         })
     }
     else {
         database.ref("chat").push({
-            message: "It's a TIE!!!"
+            message: "System: It's a TIE!!!"
         })
     }
 
@@ -100,21 +100,33 @@ database.ref().on("value", function (snapshot) {
         messageDiv.append(row);
     }
     $("#messages").html(messageDiv);
+    $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
 });
 
 $(document).ready(function () {
 
     $("#submit").on('click', function () {
         event.preventDefault();
-        if (key1 === true || key2 === true) {
+        if (key1 === true) {
             message = $("#message").val().trim();
 
-            database.ref("chat").push({
-                message: message
-            })
-            $("#message").val("");
-            $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
+            if (message.length > 0) {
+                database.ref("chat").push({
+                    message: Player1.name + ": " + message
+                })
+            }
         }
+        if (key2 === true) {
+            message = $("#message").val().trim();
+
+            if (message.length > 0) {
+                database.ref("chat").push({
+                    message: Player2.name + ": " + message
+                })
+            }
+        }
+        $("#message").val("");
+        $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
     });
 
 
