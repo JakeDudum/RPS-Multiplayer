@@ -93,14 +93,16 @@ database.ref().on("value", function (snapshot) {
         $("#join2").addClass("d-none");
     }
 
-    var messageDiv = $("<div>");
-    for (var key in snapshot.val().chat) {
-        var row = $("<p>").text(snapshot.val().chat[key].message);
-        row.addClass("mb-0");
-        messageDiv.append(row);
+    if (snapshot.val() != null) {
+        var messageDiv = $("<div>");
+        for (var key in snapshot.val().chat) {
+            var row = $("<p>").text(snapshot.val().chat[key].message);
+            row.addClass("mb-0");
+            messageDiv.append(row);
+        }
+        $("#messages").html(messageDiv);
+        $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
     }
-    $("#messages").html(messageDiv);
-    $("#messages").stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
 });
 
 $(document).ready(function () {
